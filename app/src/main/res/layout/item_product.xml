@@ -43,4 +43,14 @@
         android:textColor="#333333"
         android:layout_marginTop="5dp" />
 
+    <TextView
+        android:id="@+id/tvStockStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stok Aman"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:padding="6dp"
+        android:layout_marginTop="8dp" />
+
 </LinearLayout>

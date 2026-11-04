@@ -1,6 +1,7 @@
 package com.gabriela.stokbarangmobile.model;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,13 +40,34 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         TextView tvProductCategory =
                 convertView.findViewById(R.id.tvProductCategory);
 
+        TextView tvStockStatus =
+                convertView.findViewById(R.id.tvStockStatus);
+
         if (product != null) {
+
             tvProductName.setText(product.getName());
+
             tvProductCode.setText("Kode: " + product.getCode());
+
             tvProductStock.setText(
-                    "Stok: " + product.getStock() + " " + product.getUnit());
+                    "Stok: " + product.getStock() + " " + product.getUnit()
+            );
+
             tvProductCategory.setText(
-                    "Kategori: " + product.getCategory());
+                    "Kategori: " + product.getCategory()
+            );
+
+            if (tvStockStatus != null) {
+
+                if (product.getStock() <= product.getMinimum_stock()) {
+                    tvStockStatus.setText("Stok Menipis");
+                    tvStockStatus.setTextColor(Color.RED);
+
+                } else {
+                    tvStockStatus.setText("Stok Aman");
+                    tvStockStatus.setTextColor(Color.rgb(0, 128, 0));
+                }
+            }
         }
 
         return convertView;

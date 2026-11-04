@@ -19,6 +19,8 @@ public class AddProductActivity extends AppCompatActivity {
 
     private ProductViewModel productViewModel;
     private String token;
+    private int productId = -1;
+    private boolean isEditMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,28 +36,50 @@ public class AddProductActivity extends AppCompatActivity {
         etWarehouseLocation = findViewById(R.id.etWarehouseLocation);
         btnSaveProduct = findViewById(R.id.btnSaveProduct);
 
-        productViewModel = new ViewModelProvider(this)
-                .get(ProductViewModel.class);
+        productViewModel = new ViewModelProvider(this).get(ProductViewModel.class);
 
         token = getIntent().getStringExtra("TOKEN");
+        productId = getIntent().getIntExtra("PRODUCT_ID", -1);
+
+        isEditMode = productId != -1;
+
+        if (isEditMode) {
+            tampilkanDataEdit();
+            btnSaveProduct.setText("Perbarui Barang");
+        }
 
         btnSaveProduct.setOnClickListener(v -> saveProduct());
 
         productViewModel.message.observe(this, message -> {
-            if (message != null) {
-                Toast.makeText(this, message,
-                        Toast.LENGTH_SHORT).show();
+            if (message == null) return;
 
-                if (message.equals("Barang berhasil ditambahkan.")) {
-                    setResult(RESULT_OK);
-                    finish();
-                }
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
+            if (message.contains("berhasil ditambahkan")
+                    || message.contains("berhasil diperbarui")) {
+                setResult(RESULT_OK);
+                finish();
             }
         });
     }
 
-    private void saveProduct() {
+    private void tampilkanDataEdit() {
+        etCode.setText(getIntent().getStringExtra("CODE"));
+        etName.setText(getIntent().getStringExtra("NAME"));
+        etCategory.setText(getIntent().getStringExtra("CATEGORY"));
+        etUnit.setText(getIntent().getStringExtra("UNIT"));
 
+        etStock.setText(String.valueOf(
+                getIntent().getIntExtra("STOCK", 0)));
+
+        etMinimumStock.setText(String.valueOf(
+                getIntent().getIntExtra("MINIMUM_STOCK", 0)));
+
+        etWarehouseLocation.setText(
+                getIntent().getStringExtra("WAREHOUSE_LOCATION"));
+    }
+
+    private void saveProduct() {
         String code = etCode.getText().toString().trim();
         String name = etName.getText().toString().trim();
         String category = etCategory.getText().toString().trim();
@@ -67,27 +91,37 @@ public class AddProductActivity extends AppCompatActivity {
         if (code.isEmpty() || name.isEmpty() || category.isEmpty()
                 || unit.isEmpty() || stockText.isEmpty()
                 || minimumText.isEmpty() || location.isEmpty()) {
-
-            Toast.makeText(this, "Semua kolom harus diisi",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Semua kolom harus diisi", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (token == null || token.isEmpty()) {
-            Toast.makeText(this, "Token login tidak ditemukan",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Token login tidak ditemukan", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Product product = new Product();
-        product.setCode(code);
-        product.setName(name);
-        product.setCategory(category);
-        product.setUnit(unit);
-        product.setStock(Integer.parseInt(stockText));
-        product.setMinimum_stock(Integer.parseInt(minimumText));
-        product.setWarehouse_location(location);
+        try {
+            Product product = new Product();
 
-        productViewModel.addProduct(token, product);
+            product.setCode(code);
+            product.setName(name);
+            product.setCategory(category);
+            product.setUnit(unit);
+            product.setStock(Integer.parseInt(stockText));
+            product.setMinimum_stock(Integer.parseInt(minimumText));
+            product.setWarehouse_location(location);
+
+            btnSaveProduct.setEnabled(false);
+
+            if (isEditMode) {
+                productViewModel.updateProduct(token, productId, product);
+            } else {
+                productViewModel.addProduct(token, product);
+            }
+
+        } catch (NumberFormatException e) {
+            btnSaveProduct.setEnabled(true);
+            Toast.makeText(this, "Jumlah stok harus berupa angka", Toast.LENGTH_SHORT).show();
+        }
     }
 }

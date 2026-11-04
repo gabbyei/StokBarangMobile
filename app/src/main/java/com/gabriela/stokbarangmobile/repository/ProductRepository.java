@@ -18,7 +18,7 @@ public class ProductRepository {
         apiService = RetrofitClient.getApiService();
     }
 
-    // Mengambil daftar produk dari Laravel
+    // Mengambil daftar produk
     public void getProducts(
             String token,
             Callback<ApiResponse<List<Product>>> callback) {
@@ -29,7 +29,7 @@ public class ProductRepository {
         call.enqueue(callback);
     }
 
-    // Menambahkan produk ke Laravel
+    // Menambahkan produk
     public void addProduct(
             String token,
             Product product,
@@ -37,6 +37,43 @@ public class ProductRepository {
 
         Call<ApiResponse<Product>> call =
                 apiService.addProduct("Bearer " + token, product);
+
+        call.enqueue(callback);
+    }
+
+    // Mengambil detail produk
+    public void getProductDetail(
+            String token,
+            int id,
+            Callback<ApiResponse<Product>> callback) {
+
+        Call<ApiResponse<Product>> call =
+                apiService.getProductDetail("Bearer " + token, id);
+
+        call.enqueue(callback);
+    }
+
+    // Mengedit produk
+    public void updateProduct(
+            String token,
+            int id,
+            Product product,
+            Callback<ApiResponse<Product>> callback) {
+
+        Call<ApiResponse<Product>> call =
+                apiService.updateProduct("Bearer " + token, id, product);
+
+        call.enqueue(callback);
+    }
+
+    // Menghapus produk
+    public void deleteProduct(
+            String token,
+            int id,
+            Callback<ApiResponse<Object>> callback) {
+
+        Call<ApiResponse<Object>> call =
+                apiService.deleteProduct("Bearer " + token, id);
 
         call.enqueue(callback);
     }

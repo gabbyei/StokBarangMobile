@@ -3,33 +3,60 @@ package com.gabriela.stokbarangmobile.api;
 import com.gabriela.stokbarangmobile.model.ApiResponse;
 import com.gabriela.stokbarangmobile.model.Product;
 import com.gabriela.stokbarangmobile.model.User;
+
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
 
 public interface ApiService {
 
-    // API Login
+    // Login
     @POST("login")
     Call<ApiResponse<User>> login(@Body LoginRequest request);
 
-    // API mengambil data produk
+    // mengambil daftar produk
     @GET("products")
     Call<ApiResponse<List<Product>>> getProducts(
             @Header("Authorization") String token
     );
 
-    // API menambahkan produk
+    // menambahkan produk
     @POST("products")
     Call<ApiResponse<Product>> addProduct(
             @Header("Authorization") String token,
             @Body Product product
     );
 
-    // API Logout
+    // mengambil detail produk
+    @GET("products/{id}")
+    Call<ApiResponse<Product>> getProductDetail(
+            @Header("Authorization") String token,
+            @Path("id") int id
+    );
+
+    // mengedit produk
+    @PUT("products/{id}")
+    Call<ApiResponse<Product>> updateProduct(
+            @Header("Authorization") String token,
+            @Path("id") int id,
+            @Body Product product
+    );
+
+    // menghapus produk
+    @DELETE("products/{id}")
+    Call<ApiResponse<Object>> deleteProduct(
+            @Header("Authorization") String token,
+            @Path("id") int id
+    );
+
+    // Logout
     @POST("logout")
     Call<ApiResponse<Object>> logout(
             @Header("Authorization") String token
